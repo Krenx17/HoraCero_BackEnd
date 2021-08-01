@@ -4,7 +4,8 @@
   "description": "Parte backend del proyecto Hora Cero que es un página web de noticias",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",

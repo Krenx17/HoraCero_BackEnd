@@ -14,5 +14,6 @@ exports.createToken = function (user){
         iat: moment().unix(),
         exp: moment().day(10, "days").unix()
     }
+    
     return jwt.encode(payload, secret);
 }

@@ -8,7 +8,7 @@ exports.ensureAuth = function(req, res, next){
     if(!req.headers.authorization){
         return res.status(400).send({mesaje:"No tienes los permisas necesarios"});
     }
-    
+
     var token = req.headers.authorization.replace(/['"]+/g,"")
 
     try{
@@ -19,6 +19,7 @@ exports.ensureAuth = function(req, res, next){
     }catch (error){
         return res.status(404).send({mesaje: "El token no es valido"})
     }
+    
     req.user = payload;
     next();
 }
