@@ -1,14 +1,14 @@
 'use strict'
 
 const Noticia = require('../models/noticia.model')
-var newModel = Noticia()
 
 function newNot(req, res){
+    var newModel = Noticia()
     var params = req.body;
 
     if(req.user.rol == 'Admin' || req.user.rol == 'Escritor'){
         newModel.creador = req.user.sub
-        newModel.name = req.user.user
+        newModel.name = req.user.name
         newModel.fecha = Date()
         newModel.genero = params.genero
         newModel.titulo = params.titulo
@@ -51,10 +51,22 @@ function deletNot(req, res){
     }
 }
 
-function allNot(req, res){}
+function allNot(req, res){
+    Noticia.find((err, noticias)=>{
+        if(err) return res.status(500).send({mesaje: "Error al obtener las noticias"});
+        if(!noticias) return res.status(500).send({mesaje: "Error al consultar las noticias"}); 
+        return res.status(200).send({noticias});
+    }).sort({_id: -1})
+}
 
 function oneNot(req, res){
-    var id = req.params.id
+    var idNot = req.params.idNot
+
+    Noticia.findById(idNot, (err, noti) =>{
+        if(err) return res.status(500).send({mesaje: "Error al obtener la notificación"});
+        if(!noti) return res.status(500).send({mesaje: "Error al consultar la notificación"});
+        return res.status(200).send({noti})
+    })
 }
 
 module.exports = {

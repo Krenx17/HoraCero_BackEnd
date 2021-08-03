@@ -1,7 +1,8 @@
 'use strict'
 
 const User = require('../models/user.model')
-var userModel = User()
+const bcrypt = require("bcrypt-nodejs");
+const jwt = require("../service/jwt");
 
 function login(req, res){
     var params = req.body;
@@ -28,6 +29,7 @@ function login(req, res){
 }
 
 function register(req, res){
+    var userModel = User()
     var params = req.body;
 
     if(params.usuario && params.password){
@@ -38,7 +40,7 @@ function register(req, res){
             //Se verifica que no haya otro usuario con el mismo nombre
             if (UsersFind && UsersFind.length>=1){
                 if (err) return res.status(500).send({mesaje:"Error en la petición"});
-                return res.status(500).send({mesaje: "El usuario o el email ya existen"})
+                return res.status(500).send({mesaje: "El usuario ya existen"})
             }else{
                 userModel.usuario = params.usuario;
                 userModel.name = params.name;
@@ -162,14 +164,19 @@ function all(req, res){
 function one(req, res){
     var idUser = req.params.idUser;
 
-    User.findById(idUser, (err, obtainedUser) =>{
-        if(err) return res.status(500).send({mesaje: "Error al obtener usuarios"});
-        if(!obtainedUser) return res.status(500).send({mesaje: "Error al consultar usuario"});
-        return res.status(200).send({obtainedUser})
-    })
+    if (req.user.rol === 'Admin' || req.user.sub === idUser){
+        User.findById(idUser, (err, obtainedUser) =>{
+            if(err) return res.status(500).send({mesaje: "Error al obtener usuarios"});
+            if(!obtainedUser) return res.status(500).send({mesaje: "Error al consultar usuario"});
+            return res.status(200).send({obtainedUser})
+        })
+    }else{
+        return res.status(500).send({mesaje: "No posees los permisos necesarios"});
+    }
 }
 
 function user(req, res){
+    var userModel = User()
     var params = req.body;
 
     //Indica que solo un Administrador puede usar esta función
